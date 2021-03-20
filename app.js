@@ -27,7 +27,7 @@ app.post("/", function (req, res) {
         members: [{
             email_address: email,
             status: "subscribed",
-            merge_field: {
+            merge_fields: {
                 FNAME: firstName,
                 LNAME: lastName
             }
@@ -38,20 +38,32 @@ app.post("/", function (req, res) {
     const options={
         method:"POST",
         auth: "pratik:394d37195adb3acebdc99c2a4030490a-us1"
-    }
+    };
     const request=https.request(url,options,function(response){
+
+        if(response.statusCode===200){
+            res.sendFile(__dirname+"/sucess.html");
+        }
+        else{
+            res.sendFile(__dirname+"/failure.html");
+        }
+
         response.on("data",function(data){
             console.log(JSON.parse(data));
-        })
-    })
+        });
+    });
 
     request.write(jsonData);
     request.end();
 
 });
 
+app.post("/failure",function(req,res){
+    res.redirect("/");
+});
 
-app.listen(3000, function () {
+//changing port 3000 to process.env.PORT for heroku to host
+app.listen(process.env.PORT || 3000, function () {
     console.log("server is running on port 3000");
 });
 
